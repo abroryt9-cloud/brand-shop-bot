@@ -22,7 +22,7 @@ products = {
 }
 
 # Инициализация
-TOKEN = 8574715738:AAGrtvaU095ptjX-cgd9Da4EPKT4rgPz3Ng
+TOKEN = '8574715738:AAGrtvaU095ptjX-cgd9Da4EPKT4rgPz3Ng'
 bot = Bot(token=TOKEN)
 storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
@@ -191,7 +191,7 @@ async def process_address(message: types.Message, state: FSMContext):
     
     # Отправляем тебе уведомление
     await bot.send_message(
-        chat_id=6660842028,  # СЮДА ТВОЙ ID
+        chat_id='6660842028,  # СЮДА ТВОЙ ID
         text=f"📦 *НОВЫЙ ЗАКАЗ #{order_id}*\n\n"
              f"👤 Имя: {data['name']}\n"
              f"📞 Телефон: {data['phone']}\n"
