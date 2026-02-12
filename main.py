@@ -12,9 +12,13 @@ PORT = int(os.environ.get("PORT", 8080))
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
+# Глобальный event loop
+loop = asyncio.new_event_loop()
+asyncio.set_event_loop(loop)
+
 @dp.message(Command("start"))
 async def start(message: Message):
-    await message.answer("✅ Бот работает на Python 3.11!")
+    await message.answer("✅ Бот работает! Ошибка event loop исправлена.")
 
 app = Flask(__name__)
 
@@ -22,20 +26,23 @@ app = Flask(__name__)
 def webhook():
     if request.method == 'POST':
         update = Update(**request.json)
-        asyncio.create_task(dp.feed_update(bot, update))
+        # Используем глобальный loop
+        asyncio.run_coroutine_threadsafe(dp.feed_update(bot, update), loop)
         return "ok", 200
     return "✅ Bot is running", 200
 
 def run_flask():
     app.run(host='0.0.0.0', port=PORT)
 
+def run_bot():
+    asyncio.set_event_loop(loop)
+    loop.run_until_complete(dp.start_polling(bot))
+
+# Запускаем Flask в отдельном потоке
 threading.Thread(target=run_flask, daemon=True).start()
 
-async def main():
-    webhook_url = "https://brand-shop-bot-production.up.railway.app/"
-    await bot.set_webhook(url=webhook_url)
-    print(f"✅ Webhook set to {webhook_url}")
-    await asyncio.Event().wait()
+# Запускаем бота в отдельном потоке с event loop
+threading.Thread(target=run_bot, daemon=True).start()
 
-if __name__ == "__main__":
-    asyncio.run(main())
+# Держим главный поток живым
+threading.Event().wait()
