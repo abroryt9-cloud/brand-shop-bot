@@ -25,7 +25,7 @@ threading.Thread(target=run_flask, daemon=True).start()
 
 # Токен и ID
 TOKEN = '8574715738:AAGrtvaU095ptjX-cgd9Da4EPKT4rgPz3Ng'
-ADMIN_ID = 6660842028  # ТВОЙ ID
+ADMIN_ID =6660842028 # ТВОЙ ID
 
 bot = Bot(token=TOKEN)
 storage = MemoryStorage()
