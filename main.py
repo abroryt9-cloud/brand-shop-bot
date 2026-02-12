@@ -1,8 +1,8 @@
 import asyncio
 from aiogram import Bot, Dispatcher
-from aiogram.types import Message, Update
+from aiogram.types import Message
 from aiogram.filters import Command
-from flask import Flask, request, jsonify
+from flask import Flask
 import threading
 import os
 
@@ -14,33 +14,25 @@ dp = Dispatcher()
 
 @dp.message(Command("start"))
 async def start(message: Message):
-    await message.answer("✅ Бот работает!")
+    await message.answer("✅ Бот работает! Проблема была в коде, а не в настройках.")
 
-# ---------- FLASK ДЛЯ WEBHOOK ----------
+# ---------- FLASK ----------
 app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return "✅ Бот запущен. Webhook URL: /webhook"
-
-@app.route('/webhook', methods=['POST'])
-def webhook():
-    json_data = request.get_json()
-    update = Update(**json_data)
-    asyncio.create_task(dp.feed_update(bot, update))
-    return "ok"
+    return "✅ Bot is running"
 
 def run_flask():
-    app.run(host='0.0.0.0', port=PORT, debug=False, use_reloader=False)
+    app.run(host='0.0.0.0', port=PORT)
 
 threading.Thread(target=run_flask, daemon=True).start()
 
-# ---------- УСТАНОВКА ВЕБХУКА ----------
-async def set_webhook():
-    url = f"https://brand-shop-bot-production.up.railway.app/webhook"
-    await bot.set_webhook(url=url)
-    print(f"✅ Webhook set to {url}")
+async def main():
+    await bot.delete_webhook()
+    await bot.set_webhook(url="https://brand-shop-bot-production.up.railway.app/")
+    print("✅ Webhook set")
+    await asyncio.Event().wait()
 
 if __name__ == "__main__":
-    asyncio.run(set_webhook())
-    asyncio.run(dp.start_polling(bot))
+    asyncio.run(main())
