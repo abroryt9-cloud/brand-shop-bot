@@ -14,9 +14,8 @@ dp = Dispatcher()
 
 @dp.message(Command("start"))
 async def start(message: Message):
-    await message.answer("✅ Бот работает! Ошибка 405 исправлена.")
+    await message.answer("✅ Бот работает на Python 3.11!")
 
-# ---------- FLASK ПРИНИМАЕТ POST ----------
 app = Flask(__name__)
 
 @app.route('/', methods=['GET', 'POST'])
@@ -25,14 +24,13 @@ def webhook():
         update = Update(**request.json)
         asyncio.create_task(dp.feed_update(bot, update))
         return "ok", 200
-    return "✅ Бот работает", 200
+    return "✅ Bot is running", 200
 
 def run_flask():
     app.run(host='0.0.0.0', port=PORT)
 
 threading.Thread(target=run_flask, daemon=True).start()
 
-# ---------- УСТАНОВКА ВЕБХУКА ----------
 async def main():
     webhook_url = "https://brand-shop-bot-production.up.railway.app/"
     await bot.set_webhook(url=webhook_url)
